@@ -1,0 +1,11 @@
+{
+    "name": "calc-cli",
+    "version": "0.1.0",
+    "description": "Tiny calculator CLI used to demo continuous SBOM diffing.",
+    "homepage": "https://example.com/calc-cli",
+    "license": "MIT",
+    "dependencies": [
+        "fmt",
+        "cli11"
+    ]
+}

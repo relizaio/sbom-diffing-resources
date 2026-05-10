@@ -1,0 +1,9 @@
+# cdxgen atom artifacts (left in cwd by --deep)
+*.atom
+*.slices.json
+
+# Build outputs
+build/
+*.o
+*.so
+*.a

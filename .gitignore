@@ -1,0 +1,17 @@
+# Maven build outputs
+target/
+.m2-cache/
+**/*.jar.original
+
+# C++ demo working state — only commit the curated baseline + after snapshots
+cpp-demo/sbom-before.json
+cpp-demo/sbom-after.json
+
+# extractcode unpacked dirs (used during scancode experiments)
+**/*.jar-extract/
+
+# editor cruft
+.DS_Store
+.idea/
+*.iml
+.vscode/

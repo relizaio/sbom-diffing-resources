@@ -1,0 +1,427 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:2784c006-218b-42e9-a4be-d65dfecfc8bc",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-05-10T12:48:20Z",
+    "tools": {
+      "components": [
+        {
+          "group": "@cyclonedx",
+          "name": "cdxgen",
+          "version": "12.3.3",
+          "purl": "pkg:npm/%40cyclonedx/cdxgen@12.3.3",
+          "type": "application",
+          "bom-ref": "pkg:npm/@cyclonedx/cdxgen@12.3.3",
+          "publisher": "OWASP Foundation",
+          "authors": [
+            {
+              "name": "OWASP Foundation"
+            }
+          ]
+        }
+      ]
+    },
+    "authors": [
+      {
+        "name": "OWASP Foundation"
+      }
+    ],
+    "lifecycles": [
+      {
+        "phase": "build"
+      }
+    ],
+    "component": {
+      "group": "",
+      "name": "calc_cli",
+      "version": "",
+      "type": "application",
+      "purl": "pkg:generic/calc_cli",
+      "bom-ref": "pkg:generic/calc_cli",
+      "components": [
+        {
+          "group": "",
+          "name": "calc-cli",
+          "version": "0.1.0",
+          "description": "Tiny calculator CLI used to demo continuous SBOM diffing.",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT",
+                "url": "https://opensource.org/licenses/MIT"
+              }
+            }
+          ],
+          "purl": "pkg:generic/calc-cli@0.1.0",
+          "externalReferences": [
+            {
+              "type": "website",
+              "url": "https://example.com/calc-cli"
+            }
+          ],
+          "type": "application",
+          "bom-ref": "pkg:generic/calc-cli@0.1.0"
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "cdx:bom:componentTypes",
+        "value": "generic"
+      },
+      {
+        "name": "cdx:bom:componentNamespaces",
+        "value": "CLI\\nfmt"
+      },
+      {
+        "name": "cdx:bom:componentSrcFiles",
+        "value": "Filename /app/vcpkg.json\\nFilename CLI/CLI.hpp\\nFilename fmt/core.h\\nFilename src/calculator.cpp\\nFilename src/main.cpp\\nFilename src/persistence.cpp\\nFilename src/utils.cpp"
+      }
+    ]
+  },
+  "components": [
+    {
+      "group": "",
+      "name": "fmt",
+      "version": "",
+      "purl": "pkg:generic/fmt",
+      "type": "library",
+      "bom-ref": "pkg:generic/fmt",
+      "properties": [
+        {
+          "name": "name_with_version",
+          "value": "fmt-11.0.2"
+        },
+        {
+          "name": "analyzed_version",
+          "value": "11.0.2"
+        },
+        {
+          "name": "analyzed_source_url",
+          "value": "https://github.com/fmtlib/fmt/archive/11.0.2.tar.gz"
+        },
+        {
+          "name": "analyzed_source_filename",
+          "value": "fmt-11.0.2.tar.gz"
+        },
+        {
+          "name": "analyzed_source_hash",
+          "value": "6cb1e6d37bdcb756dbbe59be438790db409cdb4868c66e888d5df9f13f7c027f"
+        },
+        {
+          "name": "PkgProvides",
+          "value": "fmt"
+        },
+        {
+          "name": "available_versions",
+          "value": "11.0.2-1|11.0.1-1|10.2.0-2|10.2.0-1|10.1.1-1|9.1.0-2|9.1.0-1|9.0.0-1|8.1.1-2|8.1.1-1|8.0.1-1|7.1.3-1|7.0.1-1|6.2.0-2|6.2.0-1|6.0.0-1|5.3.0-1|5.2.1-1|5.2.0-1|4.1.0-1"
+        }
+      ],
+      "evidence": {
+        "identity": [
+          {
+            "field": "purl",
+            "confidence": 0.5,
+            "methods": [
+              {
+                "technique": "source-code-analysis",
+                "confidence": 0.5,
+                "value": "Filename /app/vcpkg.json"
+              }
+            ],
+            "concludedValue": "Filename /app/vcpkg.json"
+          }
+        ]
+      }
+    },
+    {
+      "group": "",
+      "name": "cli11",
+      "version": "",
+      "purl": "pkg:generic/cli11",
+      "type": "library",
+      "bom-ref": "pkg:generic/cli11",
+      "properties": [
+        {
+          "name": "name_with_version",
+          "value": "CLI11-2.4.2"
+        },
+        {
+          "name": "analyzed_version",
+          "value": "CLI11-2.4.2"
+        },
+        {
+          "name": "analyzed_source_url",
+          "value": "https://github.com/CLIUtils/CLI11/archive/refs/tags/v2.4.2.tar.gz"
+        },
+        {
+          "name": "analyzed_source_filename",
+          "value": "CLI11-2.4.2.tar.gz"
+        },
+        {
+          "name": "analyzed_source_hash",
+          "value": "f2d893a65c3b1324c50d4e682c0cdc021dd0477ae2c048544f39eed6654b699a"
+        },
+        {
+          "name": "PkgProvides",
+          "value": "cli11"
+        },
+        {
+          "name": "available_versions",
+          "value": "2.4.2-1|2.4.1-1|2.3.2-1|2.2.0-1|2.1.2-1|1.9.1-1"
+        }
+      ],
+      "evidence": {
+        "identity": [
+          {
+            "field": "purl",
+            "confidence": 0.5,
+            "methods": [
+              {
+                "technique": "source-code-analysis",
+                "confidence": 0.5,
+                "value": "Filename /app/vcpkg.json"
+              }
+            ],
+            "concludedValue": "Filename /app/vcpkg.json"
+          }
+        ]
+      }
+    },
+    {
+      "group": "",
+      "name": "calculator",
+      "version": "",
+      "purl": "pkg:generic/calculator#src/calculator.cpp",
+      "type": "library",
+      "bom-ref": "pkg:generic/calculator#src/calculator.cpp",
+      "properties": [
+        {
+          "name": "ImportedSymbols",
+          "value": "Calculator.compute"
+        }
+      ],
+      "evidence": {
+        "identity": [
+          {
+            "field": "purl",
+            "confidence": 0,
+            "methods": [
+              {
+                "technique": "source-code-analysis",
+                "confidence": 0,
+                "value": "Filename src/calculator.cpp"
+              }
+            ],
+            "concludedValue": "Filename src/calculator.cpp"
+          }
+        ]
+      },
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "ed28233f0520106f2f1712e3fb3cc5394722b8036eea374b5d9af28b7585cc66"
+        }
+      ]
+    },
+    {
+      "group": "CLI",
+      "name": "CLI",
+      "version": "",
+      "purl": "pkg:generic/CLI/CLI#CLI/CLI.hpp",
+      "type": "library",
+      "bom-ref": "pkg:generic/CLI/CLI#CLI/CLI.hpp",
+      "evidence": {
+        "identity": [
+          {
+            "field": "purl",
+            "confidence": 0,
+            "methods": [
+              {
+                "technique": "source-code-analysis",
+                "confidence": 0,
+                "value": "Filename CLI/CLI.hpp"
+              }
+            ],
+            "concludedValue": "Filename CLI/CLI.hpp"
+          }
+        ]
+      }
+    },
+    {
+      "group": "fmt",
+      "name": "core",
+      "version": "",
+      "purl": "pkg:generic/fmt/core#fmt/core.h",
+      "type": "library",
+      "bom-ref": "pkg:generic/fmt/core#fmt/core.h",
+      "evidence": {
+        "identity": [
+          {
+            "field": "purl",
+            "confidence": 0,
+            "methods": [
+              {
+                "technique": "source-code-analysis",
+                "confidence": 0,
+                "value": "Filename fmt/core.h"
+              }
+            ],
+            "concludedValue": "Filename fmt/core.h"
+          }
+        ]
+      }
+    },
+    {
+      "group": "",
+      "name": "main",
+      "version": "",
+      "purl": "pkg:generic/main#src/main.cpp",
+      "type": "library",
+      "bom-ref": "pkg:generic/main#src/main.cpp",
+      "properties": [
+        {
+          "name": "ImportedSymbols",
+          "value": "main"
+        }
+      ],
+      "evidence": {
+        "identity": [
+          {
+            "field": "purl",
+            "confidence": 0,
+            "methods": [
+              {
+                "technique": "source-code-analysis",
+                "confidence": 0,
+                "value": "Filename src/main.cpp"
+              }
+            ],
+            "concludedValue": "Filename src/main.cpp"
+          }
+        ]
+      },
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "196573f3a550cad4165d96e88275a7b999d10e7ff0fe96dd77ebacf86f2b112d"
+        }
+      ]
+    },
+    {
+      "group": "",
+      "name": "persistence",
+      "version": "",
+      "purl": "pkg:generic/persistence#src/persistence.cpp",
+      "type": "library",
+      "bom-ref": "pkg:generic/persistence#src/persistence.cpp",
+      "properties": [
+        {
+          "name": "ImportedSymbols",
+          "value": "persistence.note"
+        }
+      ],
+      "evidence": {
+        "identity": [
+          {
+            "field": "purl",
+            "confidence": 0,
+            "methods": [
+              {
+                "technique": "source-code-analysis",
+                "confidence": 0,
+                "value": "Filename src/persistence.cpp"
+              }
+            ],
+            "concludedValue": "Filename src/persistence.cpp"
+          }
+        ]
+      },
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "8a2afdf67f816c7273c9f8bc66f108de1f373f5590f66f8787ed00e707d0bb44"
+        }
+      ]
+    },
+    {
+      "group": "",
+      "name": "utils",
+      "version": "",
+      "purl": "pkg:generic/utils#src/utils.cpp",
+      "type": "library",
+      "bom-ref": "pkg:generic/utils#src/utils.cpp",
+      "properties": [
+        {
+          "name": "ImportedSymbols",
+          "value": "format_result"
+        }
+      ],
+      "evidence": {
+        "identity": [
+          {
+            "field": "purl",
+            "confidence": 0,
+            "methods": [
+              {
+                "technique": "source-code-analysis",
+                "confidence": 0,
+                "value": "Filename src/utils.cpp"
+              }
+            ],
+            "concludedValue": "Filename src/utils.cpp"
+          }
+        ]
+      },
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "b2ea71b9f67484cc13b9f56ca4108c6a162d76378d22643c6c4278878bbecf23"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:generic/calc-cli@0.1.0",
+      "dependsOn": [
+        "pkg:generic/CLI/CLI#CLI/CLI.hpp",
+        "pkg:generic/calculator#src/calculator.cpp",
+        "pkg:generic/cli11",
+        "pkg:generic/fmt",
+        "pkg:generic/fmt/core#fmt/core.h",
+        "pkg:generic/main#src/main.cpp",
+        "pkg:generic/persistence#src/persistence.cpp",
+        "pkg:generic/utils#src/utils.cpp"
+      ]
+    }
+  ],
+  "annotations": [
+    {
+      "bom-ref": "metadata-annotations",
+      "subjects": [
+        "pkg:generic/calc_cli"
+      ],
+      "annotator": {
+        "component": {
+          "group": "@cyclonedx",
+          "name": "cdxgen",
+          "version": "12.3.3",
+          "purl": "pkg:npm/%40cyclonedx/cdxgen@12.3.3",
+          "type": "application",
+          "bom-ref": "pkg:npm/@cyclonedx/cdxgen@12.3.3",
+          "publisher": "OWASP Foundation",
+          "authors": [
+            {
+              "name": "OWASP Foundation"
+            }
+          ]
+        }
+      },
+      "timestamp": "2026-05-10T12:48:20Z",
+      "text": "This Software Bill-of-Materials (SBOM) document was created on Sunday, May 10, 2026 with cdxgen. The data was captured during the build lifecycle phase. The document describes an application named 'calc_cli'. The application also has 1 child modules/components. The package type in this SBOM is generic with 2 purl namespaces described under components. The components were identified from 7 source files."
+    }
+  ]
+}
