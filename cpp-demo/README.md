@@ -127,6 +127,29 @@ The diff exits **status 1** whenever there is an *added* or
 *hash-changed* component. In a real pipeline this would fail the CI job
 and require a human to attest to the new file before the build proceeds.
 
+### Off-the-shelf diff tools tested against this signal
+
+Four general-purpose CycloneDX diff tools were also run on the
+committed `sboms/sbom-before.json` and `sboms/sbom-after.json` to see
+how each surfaces the new file-level component. Unlike the Java demo's
+namespace signal (which lives inside an existing component's
+`properties`), this one is a brand-new component — a primitive every
+tool understands — so the comparison is about which of them preserve
+the *signal-rich fields*: the file path encoded as the purl subpath,
+and the SHA-256 hash attached by `enrich-file-hashes.py`.
+
+| Tool | New file surfaced | Subpath preserved (`#src/persistence.cpp`) | SHA-256 included |
+|---|---|---|---|
+| sbom-tools — https://github.com/sbom-tool/sbom-tools — v0.1.19 | ✅ | ✅ | ❌ — `hashes` array not part of diff output |
+| sbomdiff — https://github.com/anthonyharrison/sbomdiff — v0.6.0 | ⚠️ degraded | ❌ — keys components by name only; output reduces to `persistence` with no file-path context | ❌ |
+| cyclonedx-cli — https://github.com/CycloneDX/cyclonedx-cli — v0.32.0 | ✅ | text UX: ❌ (`+ persistence @ `); JSON: ✅ | JSON only: ✅ |
+| sbom-utility — https://github.com/CycloneDX/sbom-utility — v0.19.0 | ✅ | ✅ | ✅ — full component preserved; UX wrapped in RFC-6902 jsondiff format and buried alongside timestamp / serialNumber / metadata-property churn |
+
+Read together with the Java demo's [diff-tool comparison](../java-demo/README.md#off-the-shelf-diff-tools-tested-against-this-signal),
+the two demos make a single point: off-the-shelf SBOM diff tools
+handle *component-set deltas* reasonably well and *intra-component
+property deltas* (the namespace signal in the Java case) not at all.
+
 ## Components in each SBOM
 
 **Before (7):**
