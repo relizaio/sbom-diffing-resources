@@ -180,7 +180,6 @@ each had a different blind spot.
 |---|---|---|---|
 | `cdxgen` (default `-t jar`) | ❌ — returns 0 components from a fat JAR | ❌ | ❌ |
 | **`cdxgen -t jar -c`** (used here) | ✅ | ✅ at the namespace level | ❌ — only reads classes from JARs, not loose .class files |
-| `cdxgen --lifecycle post-build` | ❌ — *"PREVIEW: only for limited project types"*; no-op for Java | ❌ | ❌ |
 | `syft` | ✅ — auto-walks `BOOT-INF/lib/*.jar` | ❌ — package-level only | ❌ |
 | `trivy fs` | ✅ when scanning the source tree | ❌ — returns 0 components from a fat JAR | ❌ |
 | **`extractcode` + `scancode`** | ✅ (it sees every nested JAR) | ✅ — every `.class` enumerated with SHA-256 | ✅ — **the only tool here that catches this** |
