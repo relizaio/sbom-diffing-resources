@@ -108,7 +108,27 @@ suspect. **A package-level reviewer would shrug and move on.**
 
 The smoking gun is at the **namespace level**, inside the
 `spring-build-analyzer` component itself. Each class enumerated by
-cdxgen lives in a `Namespaces` property attached to its component:
+cdxgen lives in a `Namespaces` property attached to its component.
+
+#### Off-the-shelf diff tools tested against this signal
+
+Four general-purpose CycloneDX diff tools were run on the variant 2
+and variant 3 SBOMs (`cdxgen 12.4.3` output) to see whether any of
+them flag the `Namespaces` property growing from 2 entries to 8 inside
+the `spring-build-analyzer` component. None do.
+
+| Tool | Version change surfaced | Namespace property change surfaced |
+|---|---|---|
+| sbom-tools — https://github.com/sbom-tool/sbom-tools — v0.1.19 | ✅ flagged as `Modified` with `field_changes: [{field: "version"}]` | ❌ — `properties` are not part of its diff model |
+| sbomdiff — https://github.com/anthonyharrison/sbomdiff — v0.6.0 | ✅ flagged as `status: change` with `version.from / .to` | ❌ — `properties` are not in its output schema at all |
+| cyclonedx-cli — https://github.com/CycloneDX/cyclonedx-cli — v0.32.0 | ✅ text UX names the version bump; JSON splits the component into paired `removed` (v0.0.0) + `added` (v0.0.1-SNAPSHOT) entries | 🟡 the raw `Namespaces` blob for both versions is embedded verbatim in the JSON output, but the tool doesn't compare them — recoverable only by post-processing the diff JSON with `jq` |
+| sbom-utility — https://github.com/CycloneDX/sbom-utility — v0.19.0 | ❌ crashes: `panic: runtime error: slice bounds out of range` | ❌ — same; and its own advisory recommends running the `Trim` command first to strip `bom-ref`, `hashes`, and `properties` before diffing, which would actively erase this signal |
+
+So for the namespace-level signal — the part that distinguishes
+*"benign dep with a version bump"* from *"benign dep replaced by
+something carrying extra payload classes"* — no off-the-shelf
+CycloneDX diff tool surfaces it. The `jq` recipe below is currently
+the most direct way to extract it:
 
 ```
 $ jq -r '.components[]
