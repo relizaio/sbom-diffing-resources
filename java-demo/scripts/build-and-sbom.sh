@@ -5,8 +5,8 @@
 #   1. Builds the analyzer JAR (benign or malicious) and installs it to a
 #      shared local Maven repo at $M2_CACHE.
 #   2. Builds the demo Spring Boot app for the requested variant.
-#   3. Runs cdxgen -c against the resulting fat JAR and writes the SBOM
-#      to <variant>/sboms/sbom-cdxgen-c.json.
+#   3. Runs cdxgen against the resulting fat JAR and writes the SBOM
+#      to <variant>/sboms/sbom-cdxgen.json.
 #
 # Usage:
 #   ./build-and-sbom.sh 1-before-dependency
@@ -77,12 +77,12 @@ build_and_sbom_demo() {
     echo ">> packaging demo for $variant ..."
     run_mvn "$dir" mvn -B package -DskipTests=true
     mkdir -p "$dir/sboms"
-    echo ">> running cdxgen -c against the fat JAR ..."
+    echo ">> running cdxgen against the fat JAR ..."
     run_cdxgen "$dir" \
-        -t jar -c -o /app/sboms/sbom-cdxgen-c.json \
+        -t jar -o /app/sboms/sbom-cdxgen.json \
         /app/target/demo-0.0.1-SNAPSHOT.jar
-    echo ">> SBOM written to $dir/sboms/sbom-cdxgen-c.json"
-    echo ">> components: $(jq '.components | length' "$dir/sboms/sbom-cdxgen-c.json")"
+    echo ">> SBOM written to $dir/sboms/sbom-cdxgen.json"
+    echo ">> components: $(jq '.components | length' "$dir/sboms/sbom-cdxgen.json")"
 }
 
 # --- main ---

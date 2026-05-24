@@ -7,9 +7,9 @@ illustrates two different supply-chain signals:
 1. **Variant 1 → 2:** *a new dependency appears* — a coarse, package-level
    signal that any SBOM tool (and any human reviewer) would catch.
 2. **Variant 2 → 3:** *the same artifact suddenly contains classes that
-   shouldn't be there* — a subtle, namespace-level signal that's
-   invisible to default SBOM tooling and only surfaces when the SBOM
-   includes per-class enumeration (`cdxgen -c`).
+   shouldn't be there* — a subtle, namespace-level signal that only
+   surfaces when the SBOM includes per-class enumeration. cdxgen does
+   this by default on fat JARs as of v12.4.x.
 
 The malicious dependency used in variant 3 is **Jeremy Long's
 [malicious-dependencies](https://github.com/jeremylong/malicious-dependencies)
@@ -31,8 +31,8 @@ Each variant directory contains:
   `DemoApplication.java`, `HelloController.java`, and the test)
 - `analyzer/` (variants 2 and 3 only) — source code for the dependency
   that variant pulls in
-- `sboms/sbom-cdxgen-c.json` — the resulting CycloneDX SBOM
-  (`cdxgen -t jar -c` over the built fat JAR)
+- `sboms/sbom-cdxgen.json` — the resulting CycloneDX SBOM
+  (`cdxgen -t jar` over the built fat JAR)
 
 ## How to reproduce all three SBOMs
 
@@ -59,20 +59,23 @@ Under the hood the script does, for each variant:
 2. **Build the demo's fat JAR** —
    `mvn -B package -DskipTests=true`.
 3. **Run cdxgen against the fat JAR** —
-   `cdxgen -t jar -c -o sboms/sbom-cdxgen-c.json target/demo-0.0.1-SNAPSHOT.jar`.
+   `cdxgen -t jar -o sboms/sbom-cdxgen.json target/demo-0.0.1-SNAPSHOT.jar`.
 
-The `-c` (`--resolve-class`) flag is what turns cdxgen from a
-package-only tool into one that also enumerates the **classes** inside
-each JAR. Without it, cdxgen returns 0 components for fat JARs and the
-narrative below collapses.
+> **cdxgen version note.** The SBOMs committed under each variant's
+> `sboms/` were generated with cdxgen 12.4.3. Earlier versions
+> (≤12.3.x) required the `-c` / `--resolve-class` flag to enumerate
+> classes inside fat JARs, and returned 0 components without it.
+> 12.4.x folds that behaviour into the default `-t jar` scan, so the
+> namespace-level signal below is now available without any extra
+> flags. If you pin to an older cdxgen, add `-c` to the command above.
 
 ## What the diffs look like
 
 ### Diff #1 — variant 1 vs variant 2 (no dep → benign dep)
 
 ```
-$ diff <(jq -r '.components[].purl' 1-before-dependency/sboms/sbom-cdxgen-c.json | sort) \
-       <(jq -r '.components[].purl' 2-with-benign-dependency/sboms/sbom-cdxgen-c.json | sort)
+$ diff <(jq -r '.components[].purl' 1-before-dependency/sboms/sbom-cdxgen.json | sort) \
+       <(jq -r '.components[].purl' 2-with-benign-dependency/sboms/sbom-cdxgen.json | sort)
 
 > pkg:maven/com.squareup/javapoet@1.13.0?type=jar
 > pkg:maven/io.github.jeremylong.spring.analyzer/spring-build-analyzer@0.0.0?type=jar
@@ -105,21 +108,20 @@ suspect. **A package-level reviewer would shrug and move on.**
 
 The smoking gun is at the **namespace level**, inside the
 `spring-build-analyzer` component itself. Each class enumerated by
-`cdxgen -c` lives in a `Namespaces` property attached to its
-component:
+cdxgen lives in a `Namespaces` property attached to its component:
 
 ```
 $ jq -r '.components[]
          | select(.purl | test("spring-build-analyzer"))
          | .properties[] | select(.name=="Namespaces") | .value' \
-     2-with-benign-dependency/sboms/sbom-cdxgen-c.json
+     2-with-benign-dependency/sboms/sbom-cdxgen.json
 io.github.jeremylong.spring.analyzer.spring_build_analyzer.HelpMojo
 io.github.jeremylong.spring.build.analyzer.AnnotationValidationProcessor
 
 $ jq -r '.components[]
          | select(.purl | test("spring-build-analyzer"))
          | .properties[] | select(.name=="Namespaces") | .value' \
-     3-with-malicious-dependency/sboms/sbom-cdxgen-c.json
+     3-with-malicious-dependency/sboms/sbom-cdxgen.json
 io.github.jeremylong.spring.analyzer.spring_build_analyzer.HelpMojo
 io.github.jeremylong.spring.build.analyzer.AnnotationValidationProcessor
 io.github.jeremylong.spring.build.analyzer.Compile$CharSequenceJavaFileObject
@@ -148,19 +150,19 @@ all things.
 A diff like the one above is an **investigation trigger**, not an
 adjudication. Specifically:
 
-- `cdxgen -c` reports the *fully-qualified class names* present in
-  each JAR. It does **not** report what those classes do, what
-  bytecode they contain, what permissions they request, or whether
-  they're benign.
+- cdxgen reports the *fully-qualified class names* present in each
+  JAR. It does **not** report what those classes do, what bytecode
+  they contain, what permissions they request, or whether they're
+  benign.
 - The SBOM does **not** include SHA-256 hashes for the individual
   classes — only at the JAR level. So if a malicious version of an
   artifact reused all the original class names but changed their
   bytecode, the namespace diff would show no change.
 - For the consumer's own compiled output (`BOOT-INF/classes/`),
-  cdxgen `-c` emits nothing at all — it only enumerates classes from
+  cdxgen emits nothing at all — it only enumerates classes from
   embedded JARs. So the **`CtxtListener.class` that this attack drops
-  into the consumer's own bytecode is invisible to cdxgen**, even
-  with `-c`. (See the [tool comparison](#tool-comparison) below.)
+  into the consumer's own bytecode is invisible to cdxgen**.
+  (See the [tool comparison](#tool-comparison) below.)
 
 The right framing for the talk is:
 
@@ -178,8 +180,8 @@ each had a different blind spot.
 
 | Tool / flag | Surfaces new dep (variant 1 → 2) | Surfaces dropped classes inside the dep (variant 2 → 3) | Surfaces injected `CtxtListener.class` in consumer's BOOT-INF/classes |
 |---|---|---|---|
-| `cdxgen` (default `-t jar`) | ❌ — returns 0 components from a fat JAR | ❌ | ❌ |
-| **`cdxgen -t jar -c`** (used here) | ✅ | ✅ at the namespace level | ❌ — only reads classes from JARs, not loose .class files |
+| **`cdxgen -t jar`** (12.4.x, used here) | ✅ | ✅ at the namespace level | ❌ — only reads classes from JARs, not loose .class files |
+| `cdxgen -t jar` (≤12.3.x) | ❌ — returned 0 components from a fat JAR; required `-c` to enumerate anything | ❌ — same; required `-c` | ❌ |
 | `syft` | ✅ — auto-walks `BOOT-INF/lib/*.jar` | ❌ — package-level only | ❌ |
 | `trivy fs` | ✅ when scanning the source tree | ❌ — returns 0 components from a fat JAR | ❌ |
 | **`extractcode` + `scancode`** | ✅ (it sees every nested JAR) | ✅ — every `.class` enumerated with SHA-256 | ✅ — **the only tool here that catches this** |
@@ -187,8 +189,8 @@ each had a different blind spot.
 A few things follow:
 
 - For the **producer side** (catching that the malicious artifact is
-  shipping something its source tree doesn't account for),
-  `cdxgen -c` is the lightest viable tool. One command, no
+  shipping something its source tree doesn't account for), cdxgen
+  12.4+ is the lightest viable tool. One command, no flags, no
   pre-extraction, and the suspicious namespaces fall out of a single
   `jq` query.
 - For the **consumer side** (catching that *your* build output now

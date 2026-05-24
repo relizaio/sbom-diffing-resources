@@ -18,7 +18,7 @@ class injections).
 | Path | What it shows |
 |---|---|
 | [`cpp-demo/`](cpp-demo/) | A small C++ project where a foreign source file is dropped into `src/`. Two cdxgen runs, before and after, surface the new file as a `pkg:generic/...#path` component. SBOM diff catches it. |
-| [`java-demo/`](java-demo/) | Three Spring Boot variants — no analyzer dep, with a benign analyzer, with [Jeremy Long's malicious-dependencies PoC](https://github.com/jeremylong/malicious-dependencies). cdxgen `-c` against each fat JAR surfaces both a new dependency (variant 1 → 2) and new namespaces inside that dependency (variant 2 → 3). |
+| [`java-demo/`](java-demo/) | Three Spring Boot variants — no analyzer dep, with a benign analyzer, with [Jeremy Long's malicious-dependencies PoC](https://github.com/jeremylong/malicious-dependencies). cdxgen against each fat JAR surfaces both a new dependency (variant 1 → 2) and new namespaces inside that dependency (variant 2 → 3). |
 
 Each demo is self-contained: source code, the recipe for reproducing
 the SBOMs from scratch (Docker only, no host JDK / Maven), and the
@@ -33,15 +33,15 @@ but exercise it at different levels:
 - **C++:** the foreign thing is a *source file*, and per-source-file
   components fall out of `cdxgen -t cpp` for free.
 - **Java:** the foreign thing is a *compiled class file* dropped into
-  a published JAR by a sibling Maven module's test phase. Per-class
-  enumeration only surfaces with the `cdxgen -c` (`--resolve-class`)
-  flag, and even then only for `BOOT-INF/lib/*.jar` — not for the
-  consumer's own `BOOT-INF/classes/`.
+  a published JAR by a sibling Maven module's test phase. cdxgen 12.4+
+  enumerates classes inside `BOOT-INF/lib/*.jar` by default on a
+  `-t jar` scan (older versions needed `-c` / `--resolve-class`),
+  but neither version covers the consumer's own `BOOT-INF/classes/`.
 
 Together the two demos make the case that **file/namespace-level SBOM
 content is the primitive that catches both halves of the supply-chain
-problem**, and that today it sits behind one undocumented flag in one
-tool and is missing entirely from others.
+problem** — newly first-class in cdxgen, still missing for loose
+consumer-side class files, and absent from most other tools.
 
 ## The talk's central claim
 
@@ -74,13 +74,13 @@ C++ toolchain.
 cd cpp-demo
 make demo
 
-# Java demo — produces java-demo/{1,2,3}-*/sboms/sbom-cdxgen-c.json
+# Java demo — produces java-demo/{1,2,3}-*/sboms/sbom-cdxgen.json
 cd ../java-demo
 ./scripts/build-and-sbom.sh all
 ```
 
 Both scripts pull the cdxgen container
-(`ghcr.io/cyclonedx/cdxgen:latest`, currently 12.3.3) and, for the
+(`ghcr.io/cyclonedx/cdxgen:latest`, currently 12.4.3) and, for the
 Java demo, also pull `maven:3.9-eclipse-temurin-17`. First run takes
 a few minutes for the image pulls and Maven dependency downloads;
 subsequent runs are cached.
