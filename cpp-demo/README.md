@@ -175,6 +175,24 @@ opens a log file. The "supply-chain" property we exercise is its mere
   needed. The Makefile pins `ghcr.io/cyclonedx/cdxgen:latest` so the
   JVM-backed atom slicer runs in a known-good environment across
   machines.
+- **cdxgen 12.4.x — known reproduction gotcha.** The committed SBOMs
+  under `sboms/` were generated with 12.3.3. As of 12.4.x cdxgen
+  descends into the `before/` and `after/` reference snapshot subdirs
+  alongside the live tree and content-deduplicates across them, so a
+  default `make demo` produces a noisy 9/9-component diff (`+3 / -3`)
+  where source-file paths bounce between `src/`, `before/src/`, and
+  `after/src/` and the before-state SBOM ends up listing
+  `persistence#after/src/persistence.cpp` — defeating the
+  "appeared between snapshots" narrative. To reproduce the clean
+  `+1 persistence.cpp` signal on 12.4.x, move the snapshot dirs out
+  of cdxgen's view for the duration of the run:
+  ```sh
+  mv before /tmp/ && mv after /tmp/
+  make demo
+  mv /tmp/before . && mv /tmp/after .
+  ```
+  With the snapshot dirs out of the way the resulting purls match the
+  committed 12.3.3 outputs exactly.
 - **`enrich-file-hashes.py`** is a 30-line post-processor that walks
   every component whose purl has a `#path` fragment, computes a SHA-256
   of the on-disk file, and attaches it to the component's `hashes`
