@@ -43,7 +43,7 @@ content is the primitive that catches both halves of the supply-chain
 problem** — newly first-class in cdxgen, still missing for loose
 consumer-side class files, and absent from most other tools.
 
-## The talk's central claim
+## The talk's central claim about Signals
 
 A package-level SBOM (the kind every CI pipeline already produces)
 catches one half of the problem: *"something new is in your dependency
@@ -51,15 +51,15 @@ list"*. It misses the half where the dependency itself starts shipping
 content it didn't ship before — and the half where your own compiled
 output gets quietly augmented at build time.
 
-A diff between two SBOMs is, in itself, a **tripwire**. It tells you
-*where to look*. It does not tell you *what's wrong*. For the actual
+A diff between two SBOMs is, in itself, a **Signal**. It tells you
+*where to look*. It does not neccessarily tell you *what's wrong*. For the actual
 forensics — what did this new class do, what did this new file
 contain — you need a second tool layer (e.g.
 [scancode-toolkit](https://github.com/nexB/scancode-toolkit) for
 file-level SHA-256 enumeration, [blint](https://github.com/owasp-dep-scan/blint)
 for native binaries, ad-hoc decompilation for JVM bytecode).
 
-The two demos here exist to make the **tripwire** part visible and
+The two demos here exist to make the **Signal** part visible and
 mechanical. The follow-on forensics is briefly discussed at the bottom
 of [`java-demo/README.md`](java-demo/README.md) and is left as the
 exercise the talk closes on.
