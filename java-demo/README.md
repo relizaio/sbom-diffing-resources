@@ -239,3 +239,6 @@ of the published source would not see them.
 The point of the variants in this directory is to make the resulting
 **SBOM-level signal visible**, not to relitigate the attack itself —
 Jeremy's repo and writeup do that better than we could.
+
+## Licensing Notes
+All content added by this repository is licensed per Apache-2.0 license, however this does not include the original [`jeremylong/malicious-dependencies`](https://github.com/jeremylong/malicious-dependencies) code, which is used here only as analysis subject.
