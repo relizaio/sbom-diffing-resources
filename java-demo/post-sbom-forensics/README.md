@@ -127,9 +127,24 @@ sha1=b7161271156e1946bc1f41cd3123f00d39154ab1  size=4189  Compile.class
 
 This is the SBOM-invisible signal made first-class: every `.class`,
 at any depth, enumerated with a hash you can diff across builds or
-match against a known-bad set. Its CycloneDX output is empty for
-non-package files, so this information lives only in scancode's native
-JSON — which is exactly why the SBOM ecosystem misses it.
+match against a known-bad set.
+
+Note that scancode is itself an SBOM producer, so whether this signal
+reaches "the SBOM" depends entirely on the **format**:
+
+| Format | Orientation | Loose `CtxtListener.class` present? |
+|---|---|---|
+| **SPDX** (scancode) | file-centric | ✅ yes — it lands in the `Files` section with a `FileChecksum` (here 12,127 `FileName` entries vs 1 `PackageName`) |
+| **CycloneDX** (scancode *and* cdxgen) | component/package-centric | ❌ no — only detected packages become components; loose files are not modeled as components |
+
+So the dropped class *does* survive into a scancode **SPDX** SBOM as a
+hashed file. What it does **not** survive into is **CycloneDX** — the
+format most CI pipelines emit, that cdxgen produces, and that the
+package-level diff tools consume. That is the real reason the ecosystem
+misses it: not that no SBOM can carry it, but that the *dominant*
+format and the diff tooling operate above the file layer.
+(`extractcode`, by contrast, is not an SBOM tool at all — it is purely
+the recursive unpacker that exposes these files for scancode to scan.)
 
 ## The one structural difference: recursion depth
 

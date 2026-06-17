@@ -214,11 +214,17 @@ A few things follow:
   pre-extraction, and the suspicious namespaces fall out of a single
   `jq` query.
 - For the **consumer side** (catching that *your* build output now
-  contains a class you never wrote), no SBOM tool currently works.
-  scancode + extractcode catches it via raw file enumeration with
-  SHA-256, but its CycloneDX output is empty for non-package files —
-  that information is only in scancode's native JSON. So this kind of
-  detection is not yet first-class in the SBOM ecosystem.
+  contains a class you never wrote), no **CycloneDX** tool currently
+  works. scancode + extractcode catches it via raw file enumeration
+  with SHA-256, and that signal *does* survive into scancode's
+  **SPDX** output (which has a file-level `Files` section), but **not**
+  into CycloneDX — which is component/package-centric, the format
+  cdxgen produces, and the one most CI pipelines and SBOM-diff tools
+  consume. So the detection exists, but not in the dominant format:
+  the CycloneDX ecosystem and package-level diff tooling operate above
+  the file layer where this signal lives. (See
+  [`post-sbom-forensics/`](post-sbom-forensics/) for the artifact-level
+  forensics that recovers it.)
 
 For a longer breakdown of what each tool catches and what it misses,
 see [the comparison study](../#what-this-repo-is) referenced from the
