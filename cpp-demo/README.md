@@ -141,9 +141,31 @@ and the SHA-256 hash attached by `enrich-file-hashes.py`.
 | Tool | New file surfaced | Subpath preserved (`#src/persistence.cpp`) | SHA-256 included |
 |---|---|---|---|
 | sbom-tools — https://github.com/sbom-tool/sbom-tools — v0.1.19 | ✅ | ✅ | ❌ — `hashes` array not part of diff output |
-| sbomdiff — https://github.com/anthonyharrison/sbomdiff — v0.6.0 | ⚠️ degraded | ❌ — keys components by name only; output reduces to `persistence` with no file-path context | ❌ |
+| sbomdiff — https://github.com/anthonyharrison/sbomdiff — v0.6.0 | ⚠️ degraded — reports `[ADDED] persistence (Version UNKNOWN) (License UNKNOWN)`; the add is detected but stripped to a bare name | ❌ — models components as `(name, version, license)`, so the purl and its `#src/persistence.cpp` subpath are discarded | ❌ — no hash field in its data model; the SHA-256 never reaches the output |
 | cyclonedx-cli — https://github.com/CycloneDX/cyclonedx-cli — v0.32.0 | ✅ | text UX: ❌ (`+ persistence @ `); JSON: ✅ | JSON only: ✅ |
 | sbom-utility — https://github.com/CycloneDX/sbom-utility — v0.19.0 | ✅ | ✅ | ✅ — full component preserved; UX wrapped in RFC-6902 jsondiff format and buried alongside timestamp / serialNumber / metadata-property churn |
+
+The sbomdiff "degraded" verdict is a **data-model mismatch**, not a
+crash or a perf issue. Its comparison model is one `(name, version,
+license)` tuple per package — built for *registered* packages. Run
+against the committed SBOMs it emits:
+
+```
+$ sbomdiff sbom-before.json sbom-after.json
+[ADDED  ] persistence: (Version UNKNOWN) (License UNKNOWN)
+```
+```json
+{ "package": "persistence", "status": "add",
+  "version": {"from": "UNKNOWN"}, "license": {"to": "UNKNOWN"} }
+```
+
+The source component is `pkg:generic/persistence#src/persistence.cpp`
+with a `SHA-256` of `8a2afdf6…`, but neither the `#src/...` subpath nor
+the hash appears anywhere in sbomdiff's text or JSON output. So it does
+register that *a* component was added (hence ⚠️, not ❌), but strips the
+two fields that make a foreign-source drop actionable — the file path
+and the content fingerprint — because a file-level component has no
+version or license for its model to hang onto.
 
 Read together with the Java demo's [diff-tool comparison](../java-demo/README.md#off-the-shelf-diff-tools-tested-against-this-signal),
 the two demos make a single point: off-the-shelf SBOM diff tools
