@@ -101,5 +101,4 @@ subsequent runs are cached.
 
 ## License
 
-[Apache 2.0](LICENSE) — same as cdxgen, scancode, and the malicious-
-dependencies PoC the Java demo references.
+All content added by this repository is licensed per Apache-2.0 license, however this does not include the original [`jeremylong/malicious-dependencies`](https://github.com/jeremylong/malicious-dependencies) code, which is used here only as analysis subject.
